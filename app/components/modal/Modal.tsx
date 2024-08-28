@@ -44,6 +44,16 @@ export default function Modal() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    console.log({
+      name,
+      description,
+      quantity,
+      categoryId,
+      categories,
+      isSubmitting,
+    });
+
     setIsSubmitting(true);
     if (option === "category") {
       await CategoryApi.create(userId, name, description);
@@ -139,10 +149,16 @@ export default function Modal() {
                 <select
                   className="select select-bordered w-full max-w-xs"
                   value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
+                  onChange={(e) => {
+                    console.log("id da categoria mudado")
+                    setCategoryId(e.target.value)
+                  }}
                 >
                   {categories.map((category: Category) => (
-                    <option key={category.id} value={category.id}>
+                    <option
+                      key={category.id}
+                      value={category.id}
+                    >
                       {category.name}
                     </option>
                   ))}
@@ -151,14 +167,21 @@ export default function Modal() {
             </>
           )}
           <div className="modal-action">
-            <input type="submit" className="btn" value="Criar" disabled={isSubmitting}/>
-            <input type="button" value="Fechar" className="btn" onClick={handleClose} />
+            <input
+              type="submit"
+              className="btn"
+              value="Criar"
+              disabled={isSubmitting}
+            />
+            <input
+              type="button"
+              value="Fechar"
+              className="btn"
+              onClick={handleClose}
+            />
           </div>
         </form>
       </div>
     </dialog>
   );
 }
-
-
-

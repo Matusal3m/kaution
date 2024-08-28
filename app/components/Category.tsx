@@ -19,7 +19,7 @@ export default function Category({ name, products }: CategoryProps) {
   const hasProducts = filteredProduts.length > 0;
 
   return (
-    <div className={hasProducts ? "" : "hidden"}>
+    <div className={hasProducts && search ? "" : "hidden"}>
       <h2
         className={`text-xl font-bold py-1 px-2 ${
           hidden ? "border-2 border-white" : ""

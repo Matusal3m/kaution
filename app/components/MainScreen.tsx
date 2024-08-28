@@ -11,17 +11,11 @@ export default function MainScreen() {
   const { userId } = useUser();
   const router = useRouter();
 
+  const { categoriesData, setCategoriesData } = useCategories();
+
   if (!userId) {
     router.push("/register");
   }
-
-  const { categoriesData, setCategoriesData } = useCategories();
-  
-  useEffect(() => {
-    if (!userId) {
-      redirect("/register");
-    }
-  }, []);
 
   console.log(categoriesData);
 
@@ -34,6 +28,7 @@ export default function MainScreen() {
             products={category.products.map((product) => ({
               ...product,
               quantity: product.quantity ?? 0,
+              categoryId: category.id,
             }))}
             key={category.name + Math.random()}
           />

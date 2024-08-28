@@ -2,6 +2,7 @@ export interface ProductProps {
   name: string;
   description?: string;
   quantity: number;
+  categoryId: string;
 }
 
 export interface CategoryProps {

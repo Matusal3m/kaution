@@ -2,13 +2,25 @@
 
 import { useState } from "react";
 import { ProductProps } from "../types";
+import { useModal } from "../context/ModalContext";
 
 // TODO: Adicionar evento de pressionar o produto e fazer a modificação
 
-export default function Product({ name, description, quantity }: ProductProps) {
+export default function Product({ name, description, quantity, categoryId }: ProductProps) {
+
+  const {setModalType, } = useModal();
+
+  const pressEvent = (e: React.MouseEvent<HTMLDivElement>) => {
+    const timer = setTimeout(() => {
+      console.log("pressed");
+    }, 400)
+  };
+
   const [currentQuantity, setCurrentQuantity] = useState(quantity || 0);
   return (
-    <div className="flex justify-between items-center border-t border-b border-gray-300 px-4 py-1">
+    <div className="flex justify-between items-center border-t border-b border-gray-300 px-4 py-1"
+    onMouseDown={pressEvent}
+    >
       <div className="flex flex-col">
         <span className="text-lg">{name}</span>
         <span className="text-sm">{description}</span>

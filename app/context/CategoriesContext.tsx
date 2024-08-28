@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   createContext,
@@ -14,16 +14,18 @@ import CategoryApi from "../api/CategoryApi";
 
 export const CategoriesContext = createContext(
   {} as {
-    categoriesData: { name: string; products: Product[] }[];
+    categoriesData: { name: string; products: Product[]; categoryId: string }[];
     setCategoriesData: Dispatch<
-      SetStateAction<{ name: string; products: Product[] }[]>
+      SetStateAction<
+        { name: string; products: Product[]; categoryId: string }[]
+      >
     >;
   }
 );
 
 export function CategoriesProvider({ children }: any) {
   const [categoriesData, setCategoriesData] = useState(
-    [] as { name: string; products: Product[] }[]
+    [] as { name: string; products: Product[]; categoryId: string }[]
   );
 
   const { userId } = useUser();

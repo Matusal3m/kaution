@@ -8,24 +8,30 @@ import CreateModal from "@/app/components/modal/CreateModal";
 import UpdateModal from "./UpdateModal";
 
 export default function Modal() {
-  const { openModal, setOpenModal, modalType, setModalType } = useModal();
-  const { userId } = useUser();
-
-  const handleClose = () => {
-    setOpenModal(false);
-  };
+  const { openModal, modalType } = useModal();
 
   //TODO: conseguir o valor de id da categoria.
-  return (
-    <dialog id="modal" className="modal">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg">Create</h3>
-        {modalType === "create" ? (
-          <CreateModal></CreateModal>
-        ) : (
-          <UpdateModal categoryId={""} isCategory={false}></UpdateModal>
-        )}
-      </div>
-    </dialog>
-  );
+  if (openModal && modalType === "create") {
+    return (
+      <dialog id="modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Create</h3>
+          <CreateModal />
+        </div>
+      </dialog>
+    );
+  }
+
+  if (openModal && modalType === "update") {
+    return (
+      <dialog id="modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Create</h3>
+          <UpdateModal />
+        </div>
+      </dialog>
+    );
+  }
+
+  return null;
 }

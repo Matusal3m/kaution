@@ -16,6 +16,10 @@ export const ModalContext = createContext(
     setModalType: Dispatch<React.SetStateAction<"" | "update" | "create">>;
     categoryId?: string;
     isCategory?: boolean;
+    setCategoryId?: Dispatch<React.SetStateAction<string>>;
+    setIsCategory?: Dispatch<React.SetStateAction<boolean>>;
+    name?: string;
+    setName?: Dispatch<React.SetStateAction<string>>;
   }
 );
 
@@ -24,6 +28,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const [modalType, setModalType] = useState<"" | "update" | "create">("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [isCategory, setIsCategory] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
 
   return (
     <ModalContext.Provider
@@ -34,6 +39,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         setModalType,
         categoryId,
         isCategory,
+        setCategoryId,
+        setIsCategory,
+        name,
+        setName,
       }}
     >
       {children}

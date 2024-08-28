@@ -76,7 +76,7 @@ export default class CategoryApi {
         return {
           name: category.name,
           products: products ?? [],
-          categoryId: category.id!,
+          id: category.id!,
         };
       });
 

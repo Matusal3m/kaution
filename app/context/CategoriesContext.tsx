@@ -14,10 +14,10 @@ import CategoryApi from "../api/CategoryApi";
 
 export const CategoriesContext = createContext(
   {} as {
-    categoriesData: { name: string; products: Product[]; categoryId: string }[];
+    categoriesData: { name: string; products: Product[]; id: string }[];
     setCategoriesData: Dispatch<
       SetStateAction<
-        { name: string; products: Product[]; categoryId: string }[]
+        { name: string; products: Product[]; id: string }[]
       >
     >;
   }
@@ -25,7 +25,7 @@ export const CategoriesContext = createContext(
 
 export function CategoriesProvider({ children }: any) {
   const [categoriesData, setCategoriesData] = useState(
-    [] as { name: string; products: Product[]; categoryId: string }[]
+    [] as { name: string; products: Product[]; id: string }[]
   );
 
   const { userId } = useUser();

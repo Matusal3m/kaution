@@ -6,23 +6,38 @@ import { useModal } from "../context/ModalContext";
 
 // TODO: Adicionar evento de pressionar o produto e fazer a modificação
 
-export default function Product({ name, description, quantity, categoryId }: ProductProps) {
-
-  const {setModalType, } = useModal();
+export default function Product({
+  name,
+  description,
+  quantity,
+  categoryId,
+}: ProductProps) {
+  const { setModalType, setOpenModal, setIsCategory, setCategoryId, setName } =
+    useModal();
 
   const pressEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     const timer = setTimeout(() => {
-      console.log("pressed");
-    }, 400)
+      const target = e.target as HTMLDivElement;
+      const productName = target.querySelector(".name")?.textContent;
+
+      setName!(name);
+      setModalType("update");
+      setIsCategory!(false);
+      setCategoryId!(categoryId);
+      
+      setOpenModal(true);
+
+    }, 400);
   };
 
   const [currentQuantity, setCurrentQuantity] = useState(quantity || 0);
   return (
-    <div className="flex justify-between items-center border-t border-b border-gray-300 px-4 py-1"
-    onMouseDown={pressEvent}
+    <div
+      className="flex justify-between items-center border-t border-b border-gray-300 px-4 py-1"
+      onMouseDown={pressEvent}
     >
       <div className="flex flex-col">
-        <span className="text-lg">{name}</span>
+        <span className="name text-lg">{name}</span>
         <span className="text-sm">{description}</span>
       </div>
       <input

@@ -6,17 +6,10 @@ import CategoryApi from "@/app/api/CategoryApi";
 import { useUser } from "@/app/context/UserContext";
 import ProductApi from "@/app/api/ProductApi";
 
-export default function UpdateModal({
-  categoryId,
-  isCategory,
-}: {
-  categoryId: string;
-  isCategory: boolean;
-}) {
-  const { openModal, setOpenModal } = useModal();
+export default function UpdateModal() {
+  const { openModal, setOpenModal, categoryId, isCategory, name, setName } = useModal();
   const { userId } = useUser();
 
-  const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,7 +18,10 @@ export default function UpdateModal({
 
   useEffect(() => {
     const fetchId = async () => {
-      const products = await ProductApi.getByCategoryId(categoryId);
+      console.log("ID DA CATEGORIA: ", categoryId);
+      console.log("NOME DA CATEGORIA: ", name);
+
+      const products = await ProductApi.getByCategoryId(categoryId!);
 
       const productId = products?.filter((product) => {
         return product.name === name;
@@ -55,12 +51,12 @@ export default function UpdateModal({
 
     setIsSubmitting(true);
     if (isCategory) {
-      await CategoryApi.update(userId, name, description);
+      await CategoryApi.update(userId, name!, description);
     } else {
       await ProductApi.update(
         productId,
-        categoryId,
-        name,
+        categoryId!,
+        name!,
         description,
         quantity
       );
@@ -81,7 +77,7 @@ export default function UpdateModal({
               type="text"
               className="input input-bordered w-full max-w-xs"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName!(e.target.value)}
             />
           </div>
           <div className="form-control">
@@ -106,7 +102,7 @@ export default function UpdateModal({
               type="text"
               className="input input-bordered w-full max-w-xs"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName!(e.target.value)}
             />
           </div>
           <div className="form-control">

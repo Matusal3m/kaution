@@ -21,7 +21,7 @@ export default function Category({ name, products }: CategoryProps) {
   return (
     <div>
       <h2
-        className={`text-xl font-bold py-1 px-2 ${
+        className={`name text-xl font-bold py-1 px-2 ${
           hidden ? "border-2 border-white" : ""
         }`}
         onClick={() => setHidden(!hidden)}

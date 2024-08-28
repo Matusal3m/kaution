@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import { UserProvider } from "./context/UserContext";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -15,8 +16,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <UserProvider>
       <html lang="pt-br">
-          <body className={montserrat.className}>{children}</body>
+        <body className={montserrat.className}>{children}</body>
       </html>
+    </UserProvider>
   );
 }

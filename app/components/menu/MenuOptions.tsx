@@ -3,14 +3,14 @@
 import { IoCreate } from "react-icons/io5";
 import { MdNotifications } from "react-icons/md";
 import { FaInfo } from "react-icons/fa6";
-import { useModal } from "../modal/ModalContext";
+import { useModal } from "../../context/ModalContext";
 
 export default function MenuOptions() {
-  const {openModal, setOpenModal} = useModal();
+  const { openModal, setOpenModal } = useModal();
 
   return (
     <ul className="menu bg-base-200 lg:menu-horizontal rounded-box absolute">
-      <li onClick={() => setOpenModal(true)}>
+      <li onClick={() => setOpenModal(!openModal)}>
         <span>
           <IoCreate />
           Criar novo

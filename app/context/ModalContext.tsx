@@ -1,6 +1,12 @@
 "use client";
 
-import { Dispatch, createContext, useContext, useState } from "react";
+import {
+  Dispatch,
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+} from "react";
 
 export const ModalContext = createContext(
   {} as {
@@ -9,7 +15,7 @@ export const ModalContext = createContext(
   }
 );
 
-export function ModalProvider({ children }: any) {
+export function ModalProvider({ children }: { children: ReactNode }) {
   const [openModal, setOpenModal] = useState<boolean>(false);
   return (
     <ModalContext.Provider value={{ openModal, setOpenModal }}>

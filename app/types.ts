@@ -10,27 +10,26 @@ export interface CategoryProps {
 }
 
 export type Product = {
-  id: string;
+  id?: string;
   name: string;
   description?: string;
-  quantity: number;
-  category: Category;
-  categoryId: string;
-  created: Date;
-  uptadeAt: Date;
+  quantity?: number;
+  category?: Category;
+  categoryId?: string;
+  created?: Date;
+  uptadeAt?: Date;
 };
-
+ 
 export type Category = {
-  id: string;
+  id?: string;
   name: string;
   description?: string;
-  user: User;
-  userId: string;
+  user?: User;
+  userId?: string;
   products?: Product[];
-  created: Date;
-  uptadeAt: Date;
+  created?: Date;
+  uptadeAt?: Date;
 }
-
 export type User = {
   id: string;
   email: string;

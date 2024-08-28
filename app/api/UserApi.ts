@@ -1,5 +1,6 @@
 import axios from "axios";
 import { baseUrl } from "./baseUrl";
+import { User } from "../types";
 
 export default class UserApi {
   static async login(email: string, password: string) {
@@ -22,16 +23,20 @@ export default class UserApi {
     name: string;
     email: string;
     password: string;
-  }) {
+  }): Promise<User> {
+    //TODO: handle erros
+
     try {
       const response = await axios.post(`${baseUrl}/user/user-create`, {
         name,
         email,
         password,
       });
+
       return response.data;
     } catch (error) {
       console.error(`Error creating user: ${error}`);
+      return {} as User;
     }
   }
 
@@ -59,5 +64,15 @@ export default class UserApi {
     } catch (error) {
       console.error(`Error resending code: ${error}`);
     }
+  }
+
+  static async getSingleUser(userId: string) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/user/user-profile/${userId}`
+      );
+
+      return response.data;
+    } catch (error) {}
   }
 }

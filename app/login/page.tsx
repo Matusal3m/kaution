@@ -1,36 +1,29 @@
 "use client";
 
-import { FaKey } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FaKey } from "react-icons/fa6";
+import { MdEmail } from "react-icons/md";
 import UserApi from "../api/UserApi";
 import { useUser } from "../context/UserContext";
+import { useRouter } from "next/navigation";
 
-//TODO: handle errors and improve styles
-
-export default function RegisterPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const { setUserId } = useUser();
   const router = useRouter();
 
-  const handleRegister = async (e: FormEvent) => {
+const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
-      const user = await UserApi.create({
-        name: email.split("@")[0],
-        email,
-        password,
-      });
+      const user = await UserApi.login(email, password);
 
       setUserId(user.id);
 
-      router.push(`/verify-email/${email}`);
+      router.push("/");
     } catch (error) {
-      console.error(`Error creating user and sending email: ${error}`);
+      console.error("Error logging in:", error);
     }
   };
 
@@ -38,9 +31,9 @@ export default function RegisterPage() {
     <div className="h-screen w-screen flex items-center justify-center">
       <form
         className="space-y-6 sm:space-y-8 flex flex-col justify-center"
-        onSubmit={handleRegister}
+        onSubmit={handleLogin}
       >
-        <h2>Register</h2>
+        <h2>Login</h2>
 
         <label className="input input-bordered flex items-center gap-2">
           <MdEmail className="text-white" />
@@ -65,12 +58,6 @@ export default function RegisterPage() {
         </label>
 
         <input type="submit" value="Entrar" className="btn" />
-        <p className="text-center">
-          Já tem uma conta?{" "}
-          <a href="/login" className="link">
-            Faça login
-          </a>
-        </p>
       </form>
     </div>
   );

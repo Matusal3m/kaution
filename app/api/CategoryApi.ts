@@ -66,13 +66,13 @@ export default class CategoryApi {
     }
   }
 
-  static async componentsData(userId?: string) {
+  static async componentsData(userId: string) {
     try {
-      // const categories = await CategoryApi.getByUserId(userId);
-      const categories = await CategoryApi.getAll();
+      const categories = await CategoryApi.getByUserId(userId);
+      // const categories = await CategoryApi.getAll();
 
       const dataPromises = categories.map(async (category) => {
-        const products = await ProductApi.getByCategoryId(category.id);
+        const products = await ProductApi.getByCategoryId(category.id!);
         return {
           name: category.name,
           products: products ?? [],

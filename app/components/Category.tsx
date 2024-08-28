@@ -3,7 +3,7 @@
 import Product from "./Product";
 import { CategoryProps } from "../types";
 import { useState } from "react";
-import { useSearch } from "./search/SearchContext";
+import { useSearch } from "../context/SearchContext";
 
 // TODO: Fazer um evento de pressionar para modificar a categoria
 

@@ -1,8 +1,29 @@
-import Category from "./Category";
-import CategoryApi from "../api/CategoryApi";
+"use client";
 
-export default async function MainScreen() {
-  const categoriesData = await CategoryApi.componentsData();
+import Category from "./Category";
+import { useUser } from "../context/UserContext";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCategories } from "../context/CategoriesContext";
+
+export default function MainScreen() {
+  const { userId } = useUser();
+  const router = useRouter();
+
+  if (!userId) {
+    router.push("/register");
+  }
+
+  const { categoriesData, setCategoriesData } = useCategories();
+  
+  useEffect(() => {
+    if (!userId) {
+      redirect("/register");
+    }
+  }, []);
+
+  console.log(categoriesData);
 
   return (
     <div className="h-[80svh] overflow-y-scroll mb-[10svh] mt-[10svh]">
@@ -10,8 +31,11 @@ export default async function MainScreen() {
         return (
           <Category
             name={category.name}
-            products={category.products}
-            key={category.name}
+            products={category.products.map((product) => ({
+              ...product,
+              quantity: product.quantity ?? 0,
+            }))}
+            key={category.name + Math.random()}
           />
         );
       })}

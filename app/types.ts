@@ -3,9 +3,11 @@ export interface ProductProps {
   description?: string;
   quantity: number;
   categoryId: string;
+  id: string;
 }
 
 export interface CategoryProps {
+  id: string;
   name: string;
   products: ProductProps[];
 }

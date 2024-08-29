@@ -1,17 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useModal } from "../../context/ModalContext";
-import CategoryApi from "@/app/api/CategoryApi";
-import { useUser } from "@/app/context/UserContext";
 import CreateModal from "@/app/components/modal/CreateModal";
 import UpdateModal from "./UpdateModal";
 
 export default function Modal() {
-  const { openModal, modalType } = useModal();
+  const { isOpen, type } = useModal();
+
+  useEffect(() => {
+    const modalElement = document.getElementById("modal") as HTMLDialogElement;
+    if (modalElement) {
+      if (isOpen) {
+        modalElement.showModal();
+      } else {
+        modalElement.close();
+      }
+    }
+  }, [isOpen]);
 
   //TODO: conseguir o valor de id da categoria.
-  if (openModal && modalType === "create") {
+  if (isOpen && type === "create") {
     return (
       <dialog id="modal" className="modal">
         <div className="modal-box">
@@ -22,7 +31,7 @@ export default function Modal() {
     );
   }
 
-  if (openModal && modalType === "update") {
+  if (isOpen && type === "update") {
     return (
       <dialog id="modal" className="modal">
         <div className="modal-box">

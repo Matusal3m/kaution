@@ -7,59 +7,75 @@ import { useUser } from "@/app/context/UserContext";
 import ProductApi from "@/app/api/ProductApi";
 
 export default function UpdateModal() {
-  const { openModal, setOpenModal, categoryId, isCategory, name, setName } = useModal();
+  const {
+    isOpen,
+    setIsOpen,
+    categoryId,
+    isCategory,
+    nameState,
+    setNameState,
+    quantityState,
+    descriptionState,
+    setDescriptionState,
+    productId,
+    setProductId,
+    element,
+  } = useModal();
   const { userId } = useUser();
 
-  const [description, setDescription] = useState<string>("");
-  const [quantity, setQuantity] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [productId, setProductId] = useState<string>("");
-  // Efeito para fechar o modal quando openModal for falso
+  // Efeito para fechar o modal quando isOpen for falso
 
   useEffect(() => {
+    if (isCategory) return;
+
     const fetchId = async () => {
-      console.log("ID DA CATEGORIA: ", categoryId);
-      console.log("NOME DA CATEGORIA: ", name);
+      console.log({
+        categoryId,
+        nameState,
+      });
 
       const products = await ProductApi.getByCategoryId(categoryId!);
 
-      const productId = products?.filter((product) => {
-        return product.name === name;
-      })[0].id;
+      console.log({ products });
 
+      const productId = products?.filter((product) => {
+        return product.name === nameState;
+      })[0].id;
+      console.log({ productId });
       //TODO: colocar um erro aqui.
-      setProductId(productId!);
+      setProductId!(productId!);
     };
 
     fetchId();
-  }, [openModal]);
+  }, [isOpen]);
 
   const handleClose = () => {
-    setOpenModal(false);
+    setIsOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     console.log({
-      name,
-      description,
-      quantity,
+      productId,
       categoryId,
-      isSubmitting,
+      nameState,
+      descriptionState,
+      quantityState,
     });
 
     setIsSubmitting(true);
     if (isCategory) {
-      await CategoryApi.update(userId, name!, description);
+      await CategoryApi.update(userId, nameState!, descriptionState!);
     } else {
-      await ProductApi.update(
-        productId,
-        categoryId!,
-        name!,
-        description,
-        quantity
-      );
+      await ProductApi.update({
+        id: productId!,
+        categoryId: categoryId!,
+        name: nameState!,
+        description: descriptionState || "",
+        quantity: quantityState || 0,
+      });
     }
     setIsSubmitting(false);
     handleClose();
@@ -76,8 +92,8 @@ export default function UpdateModal() {
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
-              value={name}
-              onChange={(e) => setName!(e.target.value)}
+              value={nameState}
+              onChange={(e) => setNameState!(e.target.value)}
             />
           </div>
           <div className="form-control">
@@ -87,8 +103,8 @@ export default function UpdateModal() {
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={descriptionState!}
+              onChange={(e) => setDescriptionState!(e.target.value)}
             />
           </div>
         </>
@@ -101,8 +117,8 @@ export default function UpdateModal() {
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
-              value={name}
-              onChange={(e) => setName!(e.target.value)}
+              value={nameState}
+              onChange={(e) => setNameState!(e.target.value)}
             />
           </div>
           <div className="form-control">
@@ -112,8 +128,8 @@ export default function UpdateModal() {
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={descriptionState}
+              onChange={(e) => setDescriptionState!(e.target.value)}
             />
           </div>
         </>
@@ -124,6 +140,20 @@ export default function UpdateModal() {
           className="btn"
           value="Atualizar"
           disabled={isSubmitting}
+        />
+        <input
+          type="button"
+          value="Excluir"
+          className="btn btn-error"
+          onClick={() => {
+            if (isCategory) {
+              CategoryApi.delete(categoryId!);
+            } else {
+              ProductApi.delete(categoryId!, productId!);
+            }
+            element!.remove();
+            handleClose();
+          }}
         />
         <input
           type="button"

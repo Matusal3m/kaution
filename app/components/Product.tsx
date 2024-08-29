@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProductProps } from "../types";
 import { useModal } from "../context/ModalContext";
+import ProductApi from "../api/ProductApi";
 
 // TODO: Adicionar evento de pressionar o produto e fazer a modificação
 
@@ -11,30 +12,50 @@ export default function Product({
   description,
   quantity,
   categoryId,
+  id,
 }: ProductProps) {
-  const { setModalType, setOpenModal, setIsCategory, setCategoryId, setName } =
-    useModal();
+  const {
+    setType,
+    setIsOpen,
+    setIsCategory,
+    setCategoryId,
+    setNameState,
+    setDescriptionState,
+    setQuantityState,
+    nameState,
+    descriptionState,
+    quantityState,
+    setElement,
+  } = useModal();
 
+  let timer: NodeJS.Timeout;
   const pressEvent = (e: React.MouseEvent<HTMLDivElement>) => {
-    const timer = setTimeout(() => {
-      const target = e.target as HTMLDivElement;
-      const productName = target.querySelector(".name")?.textContent;
+    timer = setTimeout(() => {
+      setNameState!(name);
+      setDescriptionState!(description || "");
+      setQuantityState!(quantity);
 
-      setName!(name);
-      setModalType("update");
+      setType("update");
       setIsCategory!(false);
       setCategoryId!(categoryId);
-      
-      setOpenModal(true);
+      setElement!(
+        (e.target as HTMLDivElement).closest("product") as HTMLDivElement
+      );
 
+      setIsOpen(true);
     }, 400);
   };
 
-  const [currentQuantity, setCurrentQuantity] = useState(quantity || 0);
+  const stopTimer = () => {
+    clearTimeout(timer);
+  };
+
   return (
     <div
-      className="flex justify-between items-center border-t border-b border-gray-300 px-4 py-1"
+      className="product flex justify-between items-center border-t border-b border-gray-300 px-4 py-1"
       onMouseDown={pressEvent}
+      onMouseUp={stopTimer}
+      onMouseLeave={stopTimer}
     >
       <div className="flex flex-col">
         <span className="name text-lg">{name}</span>
@@ -43,13 +64,33 @@ export default function Product({
       <input
         type="tel"
         className="w-12 h-6 rounded input-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:ring-opacity-50 transition duration-150 ease-in-out"
-        value={currentQuantity}
+        value={quantityState}
+        onBlur={(e) => {
+          console.log("Quantidade: ", quantity);
+
+          const update = async () => {
+            try {
+              await ProductApi.update({
+                categoryId: categoryId,
+                id: id!,
+                name: nameState!,
+                description: descriptionState!,
+                quantity: quantityState!,
+              });
+            } catch (error) {
+              console.error("Error updating quantity", error);
+            }
+          };
+
+          update();
+          console.log("Novo valor de quantidade: ", quantityState);
+        }}
         onChange={(e) => {
           const value = e.target.value;
-          if (value === "") setCurrentQuantity(0);
+          if (value === "") setQuantityState!(0);
           if (isNaN(parseInt(value))) return;
 
-          setCurrentQuantity(parseInt(value));
+          setQuantityState!(parseInt(value));
         }}
       />
     </div>

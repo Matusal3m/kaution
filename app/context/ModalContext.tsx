@@ -1,48 +1,74 @@
 "use client";
 
 import {
-  Dispatch,
   createContext,
   useContext,
   useState,
   ReactNode,
+  Dispatch,
+  SetStateAction,
 } from "react";
 
-export const ModalContext = createContext(
-  {} as {
-    openModal: boolean;
-    setOpenModal: Dispatch<React.SetStateAction<boolean>>;
-    modalType: "" | "update" | "create";
-    setModalType: Dispatch<React.SetStateAction<"" | "update" | "create">>;
-    categoryId?: string;
-    isCategory?: boolean;
-    setCategoryId?: Dispatch<React.SetStateAction<string>>;
-    setIsCategory?: Dispatch<React.SetStateAction<boolean>>;
-    name?: string;
-    setName?: Dispatch<React.SetStateAction<string>>;
-  }
-);
+export type ModalContextType = {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  type: "" | "update" | "create";
+  setType: Dispatch<SetStateAction<"" | "update" | "create">>;
+  categoryId?: string;
+  setCategoryId?: Dispatch<SetStateAction<string>>;
+  isCategory?: boolean;
+  setIsCategory?: Dispatch<SetStateAction<boolean>>;
+  nameState?: string;
+  setNameState?: Dispatch<SetStateAction<string>>;
+  descriptionState?: string;
+  setDescriptionState?: Dispatch<SetStateAction<string>>;
+  quantityState?: number;
+  setQuantityState?: Dispatch<SetStateAction<number>>;
+  productId?: string;
+  setProductId?: Dispatch<SetStateAction<string>>;
+  element?: HTMLDivElement;
+  setElement?: Dispatch<SetStateAction<HTMLDivElement>> 
+};
+
+export const ModalContext = createContext<ModalContextType>({
+  isOpen: false,
+  setIsOpen: () => {},
+  type: "",
+  setType: () => {},
+});
 
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [modalType, setModalType] = useState<"" | "update" | "create">("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [type, setType] = useState<"" | "update" | "create">("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [isCategory, setIsCategory] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
+  const [nameState, setNameState] = useState<string>("");
+  const [descriptionState, setDescriptionState] = useState<string>("");
+  const [quantityState, setQuantityState] = useState<number>(0);
+  const [productId, setProductId] = useState<string>("");
+  const [element, setElement] = useState<HTMLDivElement>();
 
   return (
     <ModalContext.Provider
       value={{
-        openModal,
-        setOpenModal,
-        modalType,
-        setModalType,
+        isOpen,
+        setIsOpen,
+        type,
+        setType,
         categoryId,
-        isCategory,
         setCategoryId,
+        isCategory,
         setIsCategory,
-        name,
-        setName,
+        nameState,
+        setNameState,
+        descriptionState,
+        setDescriptionState,
+        quantityState,
+        setQuantityState,
+        productId,
+        setProductId,
+        element,
+        setElement
       }}
     >
       {children}

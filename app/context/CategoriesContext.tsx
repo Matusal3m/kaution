@@ -16,9 +16,7 @@ export const CategoriesContext = createContext(
   {} as {
     categoriesData: { name: string; products: Product[]; id: string }[];
     setCategoriesData: Dispatch<
-      SetStateAction<
-        { name: string; products: Product[]; id: string }[]
-      >
+      SetStateAction<{ name: string; products: Product[]; id: string }[]>
     >;
   }
 );

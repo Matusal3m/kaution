@@ -6,11 +6,16 @@ import { FaInfo } from "react-icons/fa6";
 import { useModal } from "../../context/ModalContext";
 
 export default function MenuOptions() {
-  const { openModal, setOpenModal } = useModal();
+  const { isOpen, setIsOpen, setType } = useModal();
+
+  const handleClick = () => {
+    setType("create");
+    setIsOpen(!isOpen);
+  };
 
   return (
     <ul className="menu bg-base-200 lg:menu-horizontal rounded-box absolute">
-      <li onClick={() => setOpenModal(!openModal)}>
+      <li onClick={handleClick}>
         <span>
           <IoCreate />
           Criar novo

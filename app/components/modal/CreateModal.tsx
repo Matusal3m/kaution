@@ -6,19 +6,21 @@ import CategoryApi from "@/app/api/CategoryApi";
 import { Category, Product } from "@/app/types";
 import { useUser } from "@/app/context/UserContext";
 import ProductApi from "@/app/api/ProductApi";
+import { useCategories } from "@/app/context/CategoriesContext";
 
 export default function CreateModal() {
-  const { openModal, setOpenModal } = useModal();
+  const { isOpen, setIsOpen } = useModal();
   const { userId } = useUser();
+  const { setCategoriesData } = useCategories();
 
   const [option, setOption] = useState<string>("category");
-  const [name, setName] = useState<string>("");
+  const [name, setNameState] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<string>("");
   const [categories, setCategories] = useState([] as any);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Efeito para fechar o modal quando openModal for falso
+  // Efeito para fechar o modal quando isOpen for falso
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -28,7 +30,7 @@ export default function CreateModal() {
 
     const modalElement = document.getElementById("modal") as HTMLDialogElement;
     if (modalElement) {
-      if (openModal) {
+      if (isOpen) {
         modalElement.showModal();
       } else {
         modalElement.close();
@@ -36,23 +38,26 @@ export default function CreateModal() {
     }
 
     fetchCategories();
-  }, [openModal]);
+  }, [isOpen]);
 
   const handleClose = () => {
-    setOpenModal(false);
+    setIsOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     console.log({
+      categoryId,
       name,
       description,
       quantity,
-      categoryId,
-      categories,
-      isSubmitting,
     });
+
+    if (option === "product" && categoryId === "") {
+      alert("Você precisa escolher uma categoria");
+      return;
+    }
 
     setIsSubmitting(true);
     if (option === "category") {
@@ -60,6 +65,13 @@ export default function CreateModal() {
     } else {
       await ProductApi.create(categoryId, name, description, quantity);
     }
+
+    const fetchData = async () => {
+      const categoriesData = await CategoryApi.componentsData(userId);
+      setCategoriesData(categoriesData);
+    };
+
+    fetchData();
     setIsSubmitting(false);
     handleClose();
   };
@@ -89,7 +101,7 @@ export default function CreateModal() {
               type="text"
               className="input input-bordered w-full max-w-xs"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setNameState(e.target.value)}
             />
           </div>
           <div className="form-control">
@@ -114,7 +126,7 @@ export default function CreateModal() {
               type="text"
               className="input input-bordered w-full max-w-xs"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setNameState(e.target.value)}
             />
           </div>
           <div className="form-control">
@@ -151,6 +163,9 @@ export default function CreateModal() {
                 setCategoryId(e.target.value);
               }}
             >
+              <option value="" disabled hidden>
+                Selecione uma categoria
+              </option>
               {categories.map((category: Category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}

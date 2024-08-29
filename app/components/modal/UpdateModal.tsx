@@ -48,8 +48,7 @@ export default function UpdateModal() {
     };
 
     fetchId();
-  }, [isOpen]);
-
+  }, [categoryId, isCategory, isOpen, nameState, setProductId]);
   const handleClose = () => {
     setIsOpen(false);
   };

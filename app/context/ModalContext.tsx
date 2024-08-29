@@ -27,7 +27,7 @@ export type ModalContextType = {
   productId?: string;
   setProductId?: Dispatch<SetStateAction<string>>;
   element?: HTMLDivElement;
-  setElement?: Dispatch<SetStateAction<HTMLDivElement>> 
+  setElement?: Dispatch<SetStateAction<HTMLDivElement>>
 };
 
 export const ModalContext = createContext<ModalContextType>({
@@ -46,7 +46,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   const [descriptionState, setDescriptionState] = useState<string>("");
   const [quantityState, setQuantityState] = useState<number>(0);
   const [productId, setProductId] = useState<string>("");
-  const [element, setElement] = useState<HTMLDivElement>();
+  const [element, setElement] = useState<HTMLDivElement>({} as HTMLDivElement);
 
   return (
     <ModalContext.Provider

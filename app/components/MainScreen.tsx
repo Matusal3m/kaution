@@ -10,11 +10,11 @@ export default function MainScreen() {
   const router = useRouter();
 
   const { categoriesData } = useCategories();
+  console.log(categoriesData)
 
   if (!userId) {
     router.push("/register");
   }
-
 
   return (
     <div className="h-[80svh] overflow-y-scroll mb-[10svh] mt-[10svh]">

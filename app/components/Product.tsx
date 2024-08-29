@@ -24,9 +24,10 @@ export default function Product({
     setQuantityState,
     nameState,
     descriptionState,
-    quantityState,
     setElement,
   } = useModal();
+
+  const [currentQuantity, setCurrentQuantity] = useState(quantity);
 
   let timer: NodeJS.Timeout;
   const pressEvent = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -39,7 +40,7 @@ export default function Product({
       setIsCategory!(false);
       setCategoryId!(categoryId);
       setElement!(
-        (e.target as HTMLDivElement).closest("product") as HTMLDivElement
+        (e.target as HTMLDivElement).closest(".product") as HTMLDivElement
       );
 
       setIsOpen(true);
@@ -64,18 +65,16 @@ export default function Product({
       <input
         type="tel"
         className="w-12 h-6 rounded input-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:ring-opacity-50 transition duration-150 ease-in-out"
-        value={quantityState}
+        value={currentQuantity}
         onBlur={(e) => {
-          console.log("Quantidade: ", quantity);
-
           const update = async () => {
             try {
               await ProductApi.update({
                 categoryId: categoryId,
                 id: id!,
-                name: nameState!,
-                description: descriptionState!,
-                quantity: quantityState!,
+                name,
+                description: description || "",
+                quantity: currentQuantity!,
               });
             } catch (error) {
               console.error("Error updating quantity", error);
@@ -83,14 +82,13 @@ export default function Product({
           };
 
           update();
-          console.log("Novo valor de quantidade: ", quantityState);
         }}
         onChange={(e) => {
           const value = e.target.value;
-          if (value === "") setQuantityState!(0);
+          if (value === "") setCurrentQuantity(0);
           if (isNaN(parseInt(value))) return;
 
-          setQuantityState!(parseInt(value));
+          setCurrentQuantity(parseInt(value));
         }}
       />
     </div>

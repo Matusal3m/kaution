@@ -15,7 +15,7 @@ export const UserContext = createContext(
 
 export function UserProvider({ children }: any) {
   //temporário, deixar vazio dps dos testes
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState("66ce97b26b5a3734e4bdb3d2");
 
   useEffect(() => {
     if (typeof window !== "undefined") {

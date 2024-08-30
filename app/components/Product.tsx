@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ProductProps } from "../types";
 import { useModal } from "../context/ModalContext";
 import ProductApi from "../api/ProductApi";
+import { useCategory } from "../context/CategoryContext";
+import { useProduct } from "../context/ProductContext";
 
 // TODO: Adicionar evento de pressionar o produto e fazer a modificação
 
@@ -14,36 +16,33 @@ export default function Product({
   categoryId,
   id,
 }: ProductProps) {
+  const { setType, setIsOpen, setSelectedElement } = useModal();
   const {
-    setType,
-    setIsOpen,
-    setIsCategory,
-    setCategoryId,
-    setNameState,
-    setDescriptionState,
-    setQuantityState,
-    nameState,
-    descriptionState,
-    setElement,
-  } = useModal();
+    setProductCategoryId,
+    setProductDescription,
+    setProductElement,
+    setProductId,
+    setProductName,
+    setProductQuantity,
+  } = useProduct();
 
   const [currentQuantity, setCurrentQuantity] = useState(quantity);
 
   let timer: NodeJS.Timeout;
-  const pressEvent = (e: React.MouseEvent<HTMLDivElement>) => {
+  const pressEvent = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
     timer = setTimeout(() => {
-      setNameState!(name);
-      setDescriptionState!(description || "");
-      setQuantityState!(quantity);
-
-      setType("update");
-      setIsCategory!(false);
-      setCategoryId!(categoryId);
-      setElement!(
-        (e.target as HTMLDivElement).closest(".product") as HTMLDivElement
-      );
-
       setIsOpen(true);
+      setType("update");
+      setSelectedElement("product");
+
+      setProductCategoryId(categoryId);
+      setProductDescription(description!); 
+      setProductId(id!);
+      setProductName(name);
+      setProductQuantity(currentQuantity);
+      setProductElement((e.target as HTMLDivElement).parentElement as HTMLDivElement);
     }, 400);
   };
 
@@ -55,8 +54,11 @@ export default function Product({
     <div
       className="product flex justify-between items-center border-t border-b border-gray-300 px-4 py-1"
       onMouseDown={pressEvent}
-      onMouseUp={stopTimer}
       onMouseLeave={stopTimer}
+      onMouseUp={stopTimer}
+      onTouchStart={pressEvent}
+      onTouchEnd={stopTimer}
+      onTouchCancel={stopTimer}
     >
       <div className="flex flex-col">
         <span className="name text-lg">{name}</span>

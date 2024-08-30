@@ -3,13 +3,13 @@
 import Category from "./Category";
 import { useUser } from "../context/UserContext";
 import { useRouter } from "next/navigation";
-import { useCategories } from "../context/CategoriesContext";
+import { useCategory } from "../context/CategoryContext";
 
 export default function MainScreen() {
   const { userId } = useUser();
   const router = useRouter();
 
-  const { categoriesData } = useCategories();
+  const { categoriesData } = useCategory();
   console.log(categoriesData)
 
   if (!userId) {

@@ -25,12 +25,17 @@ export default class ProductApi {
     }
   }
 
-  static async create(
-    categoryId: string,
-    name: string,
-    description: string,
-    quantity: number
-  ) {
+  static async create({
+    categoryId,
+    description,
+    name,
+    quantity,
+  }: {
+    categoryId: string;
+    name: string;
+    description: string;
+    quantity: number;
+  }) {
     try {
       const response = await axios.post(
         `${baseUrl}/user/category/${categoryId}/product`,
@@ -46,7 +51,7 @@ export default class ProductApi {
     }
   }
 
-  static async  update({
+  static async update({
     categoryId,
     description,
     id,

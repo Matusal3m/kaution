@@ -3,16 +3,16 @@ import MainScreen from "./components/MainScreen";
 import Footer from "./components/Footer";
 import Modal from "./components/modal/Modal";
 import AppProviders from "./components/AppProviders";
-import { CategoriesProvider } from "./context/CategoriesContext";
+import { ModalProvider } from "./context/ModalContext";
 
 export default function Home() {
   return (
     <AppProviders>
       <Header />
-      <CategoriesProvider>
+      <ModalProvider>
         <MainScreen />
         <Modal />
-      </CategoriesProvider>
+      </ModalProvider>
       <Footer />
     </AppProviders>
   );

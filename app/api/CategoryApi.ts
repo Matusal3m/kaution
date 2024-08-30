@@ -28,7 +28,15 @@ export default class CategoryApi {
     }
   }
 
-  static async create(userId: string, name: string, description: string) {
+  static async create({
+    description,
+    name,
+    userId,
+  }: {
+    userId: string;
+    name: string;
+    description: string;
+  }) {
     try {
       const response = await axios.post(`${baseUrl}/user/${userId}/category`, {
         name,
@@ -40,7 +48,15 @@ export default class CategoryApi {
     }
   }
 
-  static async update(categoryId: string, name: string, description: string) {
+  static async update({
+    categoryId,
+    description,
+    name,
+  }: {
+    categoryId: string;
+    name: string;
+    description: string;
+  }) {
     try {
       const response = await axios.put(
         `${baseUrl}/user/category/${categoryId}`,

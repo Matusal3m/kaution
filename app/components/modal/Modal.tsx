@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useModal } from "../../context/ModalContext";
-import CreateModal from "@/app/components/modal/CreateModal";
-import UpdateModal from "./UpdateModal";
+import CreateElementModal from "./CreateElementModal";
+import UpdateElementModal from "./UpdateElementModal";
 
 export default function Modal() {
   const { isOpen, type } = useModal();
@@ -24,8 +24,8 @@ export default function Modal() {
     return (
       <dialog id="modal" className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Create</h3>
-          <CreateModal />
+          <h3 className="font-bold text-lg">Adicionar</h3>
+          <CreateElementModal />
         </div>
       </dialog>
     );
@@ -35,8 +35,8 @@ export default function Modal() {
     return (
       <dialog id="modal" className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Create</h3>
-          <UpdateModal />
+          <h3 className="font-bold text-lg">Atualizar</h3>
+          <UpdateElementModal />
         </div>
       </dialog>
     );

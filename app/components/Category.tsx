@@ -2,24 +2,23 @@
 
 import Product from "./Product";
 import { CategoryProps } from "../types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearch } from "../context/SearchContext";
 import { useModal } from "../context/ModalContext";
+import { useCategory } from "../context/CategoryContext";
 
 // TODO: Fazer um evento de pressionar para modificar a categoria
 
 export default function Category({ id, name, products }: CategoryProps) {
-  const [hidden, setHidden] = useState(false);
   const { search } = useSearch();
+  const { setIsOpen, setType, setSelectedElement } = useModal();
   const {
-    setIsOpen,
-    setType,
-    setIsCategory,
+    setCategoryName,
+    setCategoryElement,
     setCategoryId,
-    setElement,
-    setNameState,
-    element,
-  } = useModal();
+  } = useCategory();
+
+  const [hidden, setHidden] = useState(false);
 
   const filterProducts = (search: string) => {
     return products.filter((product) => product.name.includes(search));
@@ -27,19 +26,17 @@ export default function Category({ id, name, products }: CategoryProps) {
   const filteredProduts = filterProducts(search);
 
   let timer: NodeJS.Timeout;
-  const pressEvent = (e: React.MouseEvent<HTMLDivElement>) => {
+  const pressEvent = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     timer = setTimeout(() => {
-      console.log({ element });
-
-      setNameState!(name);
       setType("update");
-      setIsCategory!(true);
-      setCategoryId!(id);
-
-      setElement!(
-        (e.target as HTMLDivElement).closest(".category") as HTMLDivElement
+      setSelectedElement("category");
+      setCategoryName(name);
+      // setCategoryDescription(Category); -- it is not used
+      setCategoryId(id);
+      setCategoryElement(
+        ((e.target as HTMLDivElement).closest(".category") as HTMLDivElement)
+          .parentElement as HTMLDivElement
       );
-      console.log({ element });
 
       setIsOpen(true);
     }, 400);
@@ -59,6 +56,9 @@ export default function Category({ id, name, products }: CategoryProps) {
         onMouseDown={pressEvent}
         onMouseLeave={stopTimer}
         onMouseUp={stopTimer}
+        onTouchStart={pressEvent}
+        onTouchEnd={stopTimer}
+        onTouchCancel={stopTimer}
       >
         {name}
       </h2>

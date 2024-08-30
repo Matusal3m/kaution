@@ -9,6 +9,7 @@ import {
   SetStateAction,
 } from "react";
 import { CategoryProvider } from "./CategoryContext";
+import { ProductProvider } from "./ProductContext";
 
 export type ModalContextType = {
   isOpen: boolean;
@@ -23,23 +24,27 @@ export const ModalContext = createContext<ModalContextType>({} as any);
 
 export function ModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedElement, setSelectedElement] = useState<"category" | "product" | "">("");
+  const [selectedElement, setSelectedElement] = useState<
+    "category" | "product" | ""
+  >("");
   const [type, setType] = useState<"update" | "create" | "">("");
 
   return (
     <CategoryProvider>
-      <ModalContext.Provider
-        value={{
-          isOpen,
-          setIsOpen,
-          selectedElement,
-          setSelectedElement,
-          type,
-          setType,
-        }}
-      >
-        {children}
-      </ModalContext.Provider>
+      <ProductProvider>
+        <ModalContext.Provider
+          value={{
+            isOpen,
+            setIsOpen,
+            selectedElement,
+            setSelectedElement,
+            type,
+            setType,
+          }}
+        >
+          {children}
+        </ModalContext.Provider>
+      </ProductProvider>
     </CategoryProvider>
   );
 }

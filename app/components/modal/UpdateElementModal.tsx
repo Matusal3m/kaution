@@ -6,6 +6,7 @@ import CategoryApi from "@/app/api/CategoryApi";
 import ProductApi from "@/app/api/ProductApi";
 import { useCategory } from "@/app/context/CategoryContext";
 import { useState } from "react";
+import { useProduct } from "@/app/context/ProductContext";
 
 interface UpdateElementForm {
   name: string;
@@ -20,6 +21,16 @@ export default function UpdateModal() {
     categoryId,
     removeCategoryElement,
   } = useCategory();
+
+  const {
+    productName,
+    productDescription,
+    productCategoryId,
+    productId,
+    productQuantity,
+    removeProductElement,
+    updateProductFields,
+  } = useProduct();
 
   const { register, handleSubmit } = useForm<UpdateElementForm>();
 
@@ -36,16 +47,17 @@ export default function UpdateModal() {
         description: data.description,
       });
       updateCategoryFields(data.name);
-    } 
-    
+    }
+
     if (selectedElement === "product") {
       await ProductApi.update({
         name: data.name,
         description: data.description,
-        categoryId: "",
-        id: "",
-        quantity: 0,
+        categoryId: productCategoryId,
+        id: productId,
+        quantity: productQuantity,
       });
+      updateProductFields(data.name, data.description);
     }
 
     setIsSubmiting(false);
@@ -60,11 +72,12 @@ export default function UpdateModal() {
 
     // TODO: handle this
     if (selectedElement === "product") {
-      await ProductApi.delete(categoryId, "");
+      await ProductApi.delete(categoryId, productId);
+      removeProductElement();
     }
 
     setIsSubmiting(false);
-    setIsOpen(false);    
+    setIsOpen(false);
   };
 
   return (
@@ -104,6 +117,7 @@ export default function UpdateModal() {
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
+              defaultValue={productName}
               {...register("name")}
             />
           </div>
@@ -114,6 +128,7 @@ export default function UpdateModal() {
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
+              defaultValue={productDescription}
               {...register("description")}
             />
           </div>

@@ -62,7 +62,7 @@ export default function Product({
     >
       <div className="flex flex-col">
         <span className="name text-lg">{name}</span>
-        <span className="text-sm">{description}</span>
+        <span className="description text-sm">{description}</span>
       </div>
       <input
         type="tel"

@@ -8,7 +8,7 @@ import { useUser } from "@/app/context/UserContext";
 
 export default function MenuOptions() {
   const { isOpen, setIsOpen, setType } = useModal();
-  const { setUserId } = useUser();
+  const { logoutUser } = useUser();
 
   const handleClick = () => {
     setType("create");
@@ -16,8 +16,8 @@ export default function MenuOptions() {
   };
 
   const handleLogout = () => {
-    setUserId("");
-    window.location.reload();
+    logoutUser();
+    window.location.reload;
   };
 
   return (

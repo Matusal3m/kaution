@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ProductProps } from "../types";
 import { useModal } from "../context/ModalContext";
 import ProductApi from "../api/ProductApi";
-import { useCategory } from "../context/CategoryContext";
 import { useProduct } from "../context/ProductContext";
 
 // TODO: Adicionar evento de pressionar o produto e fazer a modificação
@@ -24,25 +23,39 @@ export default function Product({
     setProductId,
     setProductName,
     setProductQuantity,
+    setUpdateProductStates,
   } = useProduct();
 
   const [currentQuantity, setCurrentQuantity] = useState(quantity);
+  const [nameState, setNameState] = useState(name);
+  const [descriptionState, setDescriptionState] = useState(description || "");
 
   let timer: NodeJS.Timeout;
   const pressEvent = (
     e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
   ) => {
     timer = setTimeout(() => {
-      setIsOpen(true);
+      setIsOpen(true);  
       setType("update");
       setSelectedElement("product");
 
       setProductCategoryId(categoryId);
-      setProductDescription(description!); 
+      setProductDescription(descriptionState!);
       setProductId(id!);
-      setProductName(name);
+      setProductName(nameState);
       setProductQuantity(currentQuantity);
-      setProductElement((e.target as HTMLDivElement).parentElement as HTMLDivElement);
+      setProductElement(
+        (e.target as HTMLDivElement).parentElement as HTMLDivElement
+      );
+
+      const updateState = (newName: string, newDescription: string) => {
+        if (!(newName && newDescription)) return;
+
+        setNameState(newName);
+        setDescriptionState(newDescription);
+      };
+
+      setUpdateProductStates(() => updateState);
     }, 400);
   };
 
@@ -61,21 +74,21 @@ export default function Product({
       onTouchCancel={stopTimer}
     >
       <div className="flex flex-col">
-        <span className="name text-lg">{name}</span>
-        <span className="description text-sm">{description}</span>
+        <span className="name text-lg">{nameState}</span>
+        <span className="description text-sm">{descriptionState}</span>
       </div>
       <input
         type="tel"
         className="w-12 h-6 rounded input-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white focus:ring-opacity-50 transition duration-150 ease-in-out"
         value={currentQuantity}
         onBlur={(e) => {
-          const update = async () => {
+          const updateQuantity = async () => {
             try {
               await ProductApi.update({
                 categoryId: categoryId,
                 id: id!,
-                name,
-                description: description || "",
+                name: nameState,
+                description: descriptionState || "",
                 quantity: currentQuantity!,
               });
             } catch (error) {
@@ -83,7 +96,7 @@ export default function Product({
             }
           };
 
-          update();
+          updateQuantity();
         }}
         onChange={(e) => {
           const value = e.target.value;

@@ -1,41 +1,82 @@
 "use client";
 
-import {
-  useContext,
-  createContext,
-  useState,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import UserApi from "../api/UserApi";
+import nookies from "nookies";
 
-export const UserContext = createContext(
-  {} as { userId: string; setUserId: Dispatch<SetStateAction<string>> }
+export interface UserContextType {
+  getUserId: () => string;
+  registerUser: (data: RegisterData) => Promise<void>;
+  loginUser: (data: LoginData) => Promise<void>;
+  logoutUser: () => void;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+}
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export const UserContext = createContext<UserContextType>(
+  {} as UserContextType
 );
 
-export function UserProvider({ children }: any) {
-  //temporário, deixar vazio dps dos testes
-  const [userId, setUserId] = useState("66ce97b26b5a3734e4bdb3d2");
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUserId = localStorage.getItem("userId") ?? "";
-      setUserId(storedUserId);
+    const userId = nookies.get(null, "userId")["userId"];
+
+    if (!userId) {
+      router.push("/login");
     }
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (userId) {
-        localStorage.setItem("userId", userId);
-      } else {
-        localStorage.removeItem("userId"); // Remove userId do localStorage se estiver vazio
-      }
+  const registerUser = async ({ email, password }: RegisterData) => {
+    const user = await UserApi.create({
+      name: email.split("@")[0],
+      email,
+      password,
+    });
+
+    if (!user.id) {
+      throw new Error("Error creating user and sending email");
     }
-  }, [userId]);
+
+    nookies.set(null, "userId", user.id, {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: "/",
+    });
+
+    router.push(`/verify-email/${email}`);
+  };
+
+  const loginUser = async ({ email, password }: LoginData) => {
+    const user = await UserApi.login(email, password);
+
+    nookies.set(null, "userId", user.id, {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: "/",
+    });
+
+    router.push("/");
+  };
+
+  const getUserId = () => {
+    const userId = nookies.get(null, "userId");
+    return userId["userId"];
+  };
+
+  const logoutUser = () => {
+    nookies.destroy(null, "userId");
+  }
 
   return (
-    <UserContext.Provider value={{ userId, setUserId }}>
+    <UserContext.Provider value={{ getUserId, registerUser, loginUser,logoutUser }}>
       {children}
     </UserContext.Provider>
   );

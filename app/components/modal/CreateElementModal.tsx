@@ -3,10 +3,10 @@
 import { useForm } from "react-hook-form";
 import { useModal } from "../../context/ModalContext";
 import CategoryApi from "@/app/api/CategoryApi";
-import { Category } from "@/app/types";
+import { Category, Product } from "@/app/types";
 import { useUser } from "@/app/context/UserContext";
 import ProductApi from "@/app/api/ProductApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCategory } from "@/app/context/CategoryContext";
 
 interface CreateElementForm {
@@ -16,17 +16,30 @@ interface CreateElementForm {
 
 export default function CreateModal() {
   const { setIsOpen } = useModal();
-  const { userId } = useUser();
-  const { categoriesData, setCategoriesData } = useCategory();
-
+  const { getUserId } = useUser();
+  const { fetchCategoriesData, setReloadCategories } = useCategory();
+  
+  const userId = getUserId();
+  
   const [option, setOption] = useState<"category" | "product">("category");
-  const [isSubmitting, setIsSubmiting] = useState<boolean>(false);
+  const [categoriesData, setCategoriesData] = useState<
+    Array<{ name: string; products: Product[]; id: string }>
+  >([]);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchCategoriesData();
+      setCategoriesData(data);
+    };
+
+    fetchData();
+  }, []);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -45,7 +58,7 @@ export default function CreateModal() {
           categoryId: data.categoryId,
           name: data.name,
           description: data.description,
-          quantity: 0,
+          quantity: data.quantity,
         });
       }
       const categories = await CategoryApi.componentsData(userId);
@@ -53,7 +66,7 @@ export default function CreateModal() {
     } catch (error) {
       console.error(error);
     } finally {
-      setIsSubmiting(false);
+      setReloadCategories(true);
       handleClose();
     }
   };
@@ -77,42 +90,36 @@ export default function CreateModal() {
         <>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Name</span>
+              <span className="label-text">Nome</span>
             </label>
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
               {...register("name", { required: true })}
             />
-            {errors.name && <p className="text-error">Name is required</p>}
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Description</span>
-            </label>
-            <input
-              type="text"
-              className="input input-bordered w-full max-w-xs"
-              {...register("description", { required: false })}
-            />
+            {errors.name && (
+              <p className="text-error">A categoria precisa de um nome</p>
+            )}
           </div>
         </>
       ) : (
         <>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Name</span>
+              <span className="label-text">Nome</span>
             </label>
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
               {...register("name", { required: true })}
             />
-            {errors.name && <p className="text-error">Name is required</p>}
+            {errors.name && (
+              <p className="text-error">O produto precisa de um nome</p>
+            )}
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Description</span>
+              <span className="label-text">Descrição</span>
             </label>
             <input
               type="text"
@@ -141,9 +148,7 @@ export default function CreateModal() {
               className="select select-bordered w-full max-w-xs"
               {...register("categoryId", { required: true })}
             >
-              <option value="" disabled hidden>
-                Selecione uma categoria
-              </option>
+              <option value="">Selecione uma categoria</option>
               {categoriesData.map((category: Category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}

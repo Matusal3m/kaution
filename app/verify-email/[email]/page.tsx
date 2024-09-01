@@ -8,13 +8,12 @@ export default function Page({ params }: { params: { email: string } }) {
   const email = params.email.replace("%40", "@");
   const [code, setCode] = useState("");
   const router = useRouter();
-  
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
       await UserApi.verifyEmail({ email, code });
-      console.log("USUARIO CONFIRMADO:");
 
       router.push("/");
     } catch (error) {

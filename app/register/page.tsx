@@ -2,35 +2,21 @@
 
 import { FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import UserApi from "../api/UserApi";
-import { useUser } from "../context/UserContext";
+import { FieldValues, useForm } from "react-hook-form";
+import { useUser, RegisterData } from "../context/UserContext";
 
-//TODO: handle errors and improve styles
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { register, handleSubmit } = useForm();
+  const { registerUser } = useUser();
 
-  const { setUserId } = useUser();
-  const router = useRouter();
-
-  const handleRegister = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleRegister = async (data: FieldValues) => {
+    const { email, password } = data as RegisterData;
 
     try {
-      const user = await UserApi.create({
-        name: email.split("@")[0],
-        email,
-        password,
-      });
-
-      setUserId(user.id);
-
-      router.push(`/verify-email/${email}`);
+      await registerUser({ email, password });
     } catch (error) {
-      console.error(`Error creating user and sending email: ${error}`);
+      console.error(`${error}`);
     }
   };
 
@@ -38,29 +24,27 @@ export default function RegisterPage() {
     <div className="h-screen w-screen flex items-center justify-center">
       <form
         className="space-y-6 sm:space-y-8 flex flex-col justify-center"
-        onSubmit={handleRegister}
+        onSubmit={handleSubmit(handleRegister)}
       >
         <h2>Register</h2>
 
         <label className="input input-bordered flex items-center gap-2">
           <MdEmail className="text-white" />
           <input
+            {...register("email")}
             type="text"
             className="grow"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
           />
         </label>
 
         <label className="input input-bordered flex items-center gap-2">
           <FaKey className="text-white" />
           <input
+            {...register("password")}
             type="password"
             className="grow"
             placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
           />
         </label>
 

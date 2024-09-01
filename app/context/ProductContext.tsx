@@ -19,8 +19,11 @@ interface ProductContextI {
   setProductId: Dispatch<SetStateAction<string>>;
   setProductCategoryId: Dispatch<SetStateAction<string>>;
   setProductElement: Dispatch<SetStateAction<HTMLDivElement>>;
-  updateProductFields: (newName: string, newDescription: string) => void;
   removeProductElement: () => void;
+  updateProductStates: (newName: string, newDescription: string) => void;
+  setUpdateProductStates: Dispatch<
+    SetStateAction<(newName: string, newDescription: string) => void>
+  >;
 }
 
 export const ProductContext = createContext({} as ProductContextI);
@@ -34,16 +37,9 @@ export function ProductProvider({ children }: any) {
   const [productElement, setProductElement] = useState<HTMLDivElement>(
     {} as HTMLDivElement
   );
-
-  const updateProductFields = (newName: string, newDescription: string) => {
-    const nameField = productElement.querySelector(".name") as HTMLDivElement;
-    const descriptionField = productElement.querySelector(
-      ".description"
-    ) as HTMLDivElement;
-
-    nameField.textContent = newName;
-    descriptionField.textContent = newDescription;
-  };
+  const [updateProductStates, setUpdateProductStates] = useState<
+    (newName: string, newDescription: string) => void
+  >(() => {});
 
   const removeProductElement = () => {
     productElement.remove();
@@ -65,7 +61,8 @@ export function ProductProvider({ children }: any) {
         setProductId,
         setProductName,
         setProductQuantity,
-        updateProductFields,
+        updateProductStates,
+        setUpdateProductStates,
       }}
     >
       {children}

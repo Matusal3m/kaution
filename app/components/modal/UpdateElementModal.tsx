@@ -16,12 +16,11 @@ interface UpdateElementForm {
 export default function UpdateModal() {
   const { setIsOpen, selectedElement } = useModal();
   const {
-    updateCategoryFields,
     categoryName,
     categoryId,
     removeCategoryElement,
+    updateCategoryStates,
   } = useCategory();
-
   const {
     productName,
     productDescription,
@@ -29,24 +28,24 @@ export default function UpdateModal() {
     productId,
     productQuantity,
     removeProductElement,
-    updateProductFields,
+    updateProductStates,
   } = useProduct();
 
-  const { register, handleSubmit } = useForm<UpdateElementForm>();
-
-  const [isSubmitting, setIsSubmiting] = useState<boolean>(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UpdateElementForm>();
 
   const onSubmit = async (data: UpdateElementForm) => {
-    // TODO: every empty field should have a value too, it need to be get from somewhere;
-    setIsSubmiting(true);
-
     if (selectedElement === "category") {
       await CategoryApi.update({
         categoryId: categoryId,
         name: data.name,
         description: data.description,
       });
-      updateCategoryFields(data.name);
+
+      updateCategoryStates(data.name);
     }
 
     if (selectedElement === "product") {
@@ -57,10 +56,9 @@ export default function UpdateModal() {
         id: productId,
         quantity: productQuantity,
       });
-      updateProductFields(data.name, data.description);
+      updateProductStates(data.name, data.description);
     }
 
-    setIsSubmiting(false);
     setIsOpen(false);
   };
 
@@ -76,7 +74,6 @@ export default function UpdateModal() {
       removeProductElement();
     }
 
-    setIsSubmiting(false);
     setIsOpen(false);
   };
 
@@ -86,53 +83,45 @@ export default function UpdateModal() {
         <>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Name</span>
+              <span className="label-text">Nome</span>
             </label>
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
-              {...(register("name"), { required: true })}
+              {...register("name", { required: true })}
               defaultValue={categoryName}
             />
           </div>
           {/* TODO: if a description start to be used here, add it to the requerid fields and hooks */}
-          {/*<div className="form-control">
-            <label className="label">
-              <span className="label-text">Description</span>
-            </label>
-             <input
-              type="text"
-              className="input input-bordered w-full max-w-xs"
-              {...register("description")}
-            /> 
-          </div>
-          */}
         </>
       ) : (
         <>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Name</span>
+              <span className="label-text">Nome</span>
             </label>
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
               defaultValue={productName}
-              {...register("name")}
+              {...register("name", { required: true })}
             />
           </div>
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Description</span>
+              <span className="label-text">Descrição</span>
             </label>
             <input
               type="text"
               className="input input-bordered w-full max-w-xs"
               defaultValue={productDescription}
-              {...register("description")}
+              {...register("description", { required: true })}
             />
           </div>
         </>
+      )}
+      {(errors.description || errors.name) && (
+        <p className="text-red-500">Preencha todos os campos</p>
       )}
       <div className="modal-action">
         <input
@@ -148,7 +137,12 @@ export default function UpdateModal() {
           onClick={handleDelete}
           disabled={isSubmitting}
         />
-        <input type="button" value="Fechar" className="btn" />
+        <input
+          type="button"
+          value="Fechar"
+          className="btn"
+          onClick={() => setIsOpen(false)}
+        />
       </div>
     </form>
   );

@@ -14,61 +14,59 @@ import CategoryApi from "../api/CategoryApi";
 
 interface CategoryContextI {
   categoryName: string;
-  categoriesData: { name: string; products: Product[]; id: string }[];
   categoryDescription: string;
   categoryElement: HTMLDivElement;
   categoryId: string;
+  reloadCategories: boolean;
   setCategoryElement: Dispatch<SetStateAction<HTMLDivElement>>;
   setCategoryName: Dispatch<SetStateAction<string>>;
   setCategoryDescription: Dispatch<SetStateAction<string>>;
-  setCategoriesData: Dispatch<
-    SetStateAction<{ name: string; products: Product[]; id: string }[]>
-  >;
   setCategoryId: Dispatch<SetStateAction<string>>;
-  updateCategoryFields: (newName: string) => void;
   removeCategoryElement: () => void;
+  updateCategoryStates: (newName: string) => void;
+  setUpdateCategoryStates: Dispatch<SetStateAction<(newName: string) => void>>;
+  setReloadCategories: Dispatch<SetStateAction<boolean>>;
+  fetchCategoriesData: () => Promise<
+    {
+      name: string;
+      products: Product[];
+      id: string;
+    }[]
+  >;
 }
-type CategoriesDataType = Array<{
+
+interface CategoryData {
   name: string;
   products: Product[];
   id: string;
-}>;
+}
 
 export const CategoryContext = createContext({} as CategoryContextI);
 
 export function CategoryProvider({ children }: any) {
-  const [categoriesData, setCategoriesData] = useState(
-    [] as CategoriesDataType
-  );
-
   const [categoryName, setCategoryName] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [categoryElement, setCategoryElement] = useState<HTMLDivElement>(null!);
   const [categoryId, setCategoryId] = useState("");
+  const [updateCategoryStates, setUpdateCategoryStates] = useState<
+    (newName: string) => void
+  >(() => {});
+  const [reloadCategories, setReloadCategories] = useState(false);
+  const { getUserId } = useUser();
 
-  const { userId } = useUser();
+  const fetchCategoriesData = async (): Promise<CategoryData[]> => {
+    try {
+      const userId = getUserId();
 
-  useEffect(() => {
-    async function fetchCategoriesData() {
-      try {
-        const categoriesData = await CategoryApi.componentsData(userId);
-        setCategoriesData(categoriesData);
-      } catch (error) {
-        console.error("Error fetching categories data:", error);
+      if (userId === "undefined") {
+        return [];
       }
-    }
 
-    if (userId) {
-      fetchCategoriesData();
+      return await CategoryApi.componentsData(userId);
+    } catch (error) {
+      console.error("Error fetching categories data:", error);
+      return [];
     }
-  }, [userId, setCategoriesData]);
-
-  const updateCategoryFields = (newName: string) => {
-    const nameField = categoryElement.querySelector(
-      ".name"
-    ) as HTMLInputElement;
-    // If a description field exists, update it
-    nameField.textContent = newName;
   };
 
   const removeCategoryElement = () => {
@@ -78,18 +76,20 @@ export function CategoryProvider({ children }: any) {
   return (
     <CategoryContext.Provider
       value={{
-        categoriesData,
-        setCategoriesData,
         categoryDescription,
         categoryName,
         setCategoryDescription,
         setCategoryName,
         categoryElement,
         setCategoryElement,
-        updateCategoryFields,
         categoryId,
         setCategoryId,
         removeCategoryElement,
+        updateCategoryStates,
+        setUpdateCategoryStates,
+        fetchCategoriesData,
+        reloadCategories,
+        setReloadCategories,
       }}
     >
       {children}

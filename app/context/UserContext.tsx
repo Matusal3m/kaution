@@ -58,7 +58,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const loginUser = async ({ email, password }: LoginData) => {
     const user = await UserApi.login(email, password);
 
-    nookies.set(null, "userId", user.id, {
+    nookies.set(null, "userId", user.userID, {
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: "/",
     });
